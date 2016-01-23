@@ -190,22 +190,26 @@ raw.scores <- pos-neg
 scores <- raw.scores / rowSums(fit$topics)
 
 # Work out normalised tweets allocation distribution to topics
-allocation.dist <- as.data.frame(matrix(rep(0,50),ncol=50))
+allocation.dist <- as.data.frame(matrix(rep(0,K*length(fit$assignments)),ncol=50))
 
-for (n in 1:2){
+for (n in 1:length(fit$assignments)){
   cat(n,'\n')
   for (j in fit$assignments[[n]]){
     i <- j + 1
     allocation.dist[n,i] <- allocation.dist[n,i] + 1
   }
-  #allocation.dist[n,] <- allocation.dist[n,] / sum(allocation.dist[n,])
+  allocation.dist[n,] <- allocation.dist[n,] / sum(allocation.dist[n,])
 }
 
-allocation.dist$airline <- tweetsText$aairline
+allocation.dist$airline <- tweetsText$airline
+
+# Remove NaN
+allocation.dist <- allocation.dist[complete.cases(allocation.dist),]
 
 # Calculate sentiment score for each tweet depending on allocation to topics
-
-
+tweet.raw_scores <- rowSums(allocation.dist[,-51] * scores)
+tweet.scores <- as.data.frame(cbind(tweet.raw_scores,allocation.dist$airline))
+colnames(tweet.scores) <- c("tweetScore","airline")
 
 # Save results
 save(topics,scores,allocation.dist,tweet.scores,file="results.RData")
