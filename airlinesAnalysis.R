@@ -189,5 +189,23 @@ raw.scores <- pos-neg
 # Normalise score by the number of word frequencies
 scores <- raw.scores / rowSums(fit$topics)
 
-# Give a scoring to each airline based on the allocation of tweets
+# Work out normalised tweets allocation distribution to topics
+allocation.dist <- as.data.frame(matrix(rep(0,50),ncol=50))
 
+for (n in 1:2){
+  cat(n,'\n')
+  for (j in fit$assignments[[n]]){
+    i <- j + 1
+    allocation.dist[n,i] <- allocation.dist[n,i] + 1
+  }
+  #allocation.dist[n,] <- allocation.dist[n,] / sum(allocation.dist[n,])
+}
+
+allocation.dist$airline <- tweetsText$aairline
+
+# Calculate sentiment score for each tweet depending on allocation to topics
+
+
+
+# Save results
+save(topics,scores,allocation.dist,tweet.scores,file="results.RData")
