@@ -1,4 +1,6 @@
 library(ggplot2)
+library(dplyr)
+library(magrittr)
 
 load("lda_model.RData")
 load("results.RData")
@@ -6,11 +8,6 @@ load("results.RData")
 # Text styling
 
 t <- list(family = "Futura, sans serif", size = 18, color = toRGB("grey50"))
-
-# First do a chart that places topics on a horizontal line based on their score,
-# and highlight the position of the topics with wordclouds on this line
-
-
 
 # Then do figure one below to show the distribution of the scores - i.e. 
 # which are the most frequent scores? We can also highlight our preferred topics
@@ -24,7 +21,7 @@ topics.scores <- as.data.frame(cbind(topics.nos,scores))
 freq <- density.plot[match(round(topics.scores[,2],2),round(density.plot$Score,2)),2]
 topics.scores$freq <- freq
 
-ggplot(data=density.plot, aes(x=Score, y=Frequency)) +
+dist <- ggplot(data=density.plot, aes(x=Score, y=Frequency)) +
   geom_line(size=1.5, color = "#222222") +
   theme(text = element_text(size=14)) +
   scale_x_continuous(name="Scores", breaks=seq(-0.25,0.4,0.05)) +
@@ -60,12 +57,53 @@ ggplot(data=density.plot, aes(x=Score, y=Frequency)) +
   
 # Do the following figures / illustrations
 
-# 1. Top 3 topics for each airline
-
-# 2. Dot clouds of tweets for each airlines, varying x according to their 
+# 1. Dot clouds of tweets for each airlines, varying x according to their 
 # score. One colour per airline. See if we can spot clusters in negative
 # or positive regions.
 
+# 2. Top 3 topics for each airline
+
+topics.easyjet <- colMeans(allocation.dist[allocation.dist[,51]=="easyjet",-51])
+topics.ryanair <- colMeans(allocation.dist[allocation.dist[,51]=="ryanair",-51])
+topics.vueling <- colMeans(allocation.dist[allocation.dist[,51]=="vueling",-51])
+topics.norwegian <- colMeans(allocation.dist[allocation.dist[,51]=="norwegian",-51])
+topics.ba <- colMeans(allocation.dist[allocation.dist[,51]=="ba",-51])
+
+topics.names <- c("17","42","31","49","11","45","46","14","27","37")
+
+# EasyJet
+dash.easyjet <- as.data.frame(cbind(topics.names,topics.easyjet[c(17,42,31,49,11,45,46,14,27,37)]))
+colnames(dash.easyjet) <- c("Topics","Score")
+dash.easyjet$Topics <- as.character(dash.easyjet$Topics)
+dash.easyjet$Topics <- factor(dash.easyjet$Topics, levels = unique(dash.easyjet$Topics))
+
+plot.easyjet <- ggplot() + 
+    geom_bar(data=dash.easyjet[,], aes(x=Topics, y=Score), stat="Identity", col="grey", fill="grey", width = 0.7) +
+    geom_bar(data=dash.easyjet[c(5,6,7),], aes(x=Topics, y=Score), stat="Identity", col="blue", fill="blue", width = 0.7) +
+    geom_bar(data=dash.easyjet[1,], aes(x=Topics, y=Score), stat="Identity", col="red", fill="red", width = 0.7) +
+    geom_bar(data=dash.easyjet[c(3,4),], aes(x=Topics, y=Score), stat="Identity", col="green", fill="green", width = 0.7) +
+    geom_bar(data=dash.easyjet[c(8,9),], aes(x=Topics, y=Score), stat="Identity", col="purple", fill="purple", width = 0.7) +
+    geom_bar(data=dash.easyjet[10,], aes(x=Topics, y=Score), stat="Identity", col="orange", fill="orange", width = 0.7) +  
+    geom_bar(data=dash.easyjet[2,], aes(x=Topics, y=Score), stat="Identity", col="cyan", fill="cyan", width = 0.7) +  
+    scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
+
+# Ryanair
+dash.ryanair <- as.data.frame(cbind(topics.names,topics.ryanair[c(17,42,31,49,11,45,46,14,27,37)]))
+colnames(dash.ryanair) <- c("Topics","Score")
+dash.ryanair$Topics <- as.character(dash.ryanair$Topics)
+dash.ryanair$Topics <- factor(dash.ryanair$Topics, levels = unique(dash.ryanair$Topics))
+
+plot.ryanair <- ggplot() + 
+  geom_bar(data=dash.ryanair[c(5,6,7),], aes(x=Topics, y=Score), stat="Identity", col="blue", fill="blue", width = 0.7) +
+  geom_bar(data=dash.ryanair[1,], aes(x=Topics, y=Score), stat="Identity", col="red", fill="red", width = 0.7) +
+  geom_bar(data=dash.ryanair[c(3,4),], aes(x=Topics, y=Score), stat="Identity", col="green", fill="green", width = 0.7) +
+  geom_bar(data=dash.ryanair[c(8,9),], aes(x=Topics, y=Score), stat="Identity", col="purple", fill="purple", width = 0.7) +
+  geom_bar(data=dash.ryanair[10,], aes(x=Topics, y=Score), stat="Identity", col="orange", fill="orange", width = 0.7) +  
+  geom_bar(data=dash.ryanair[2,], aes(x=Topics, y=Score), stat="Identity", col="cyan", fill="cyan", width = 0.7) +  
+  scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
+
+# COMPLETE THE OTHER AIRLINES
+          
 # 3. Summary of position of each airline by topic (e.g. a mini chart for each
 # of the topics, what's the "share" of that topic for each airline, i.e. how
 # many tweets associated to that topic an airline has over its total number
