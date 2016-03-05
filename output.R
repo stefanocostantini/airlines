@@ -61,7 +61,7 @@ dist <- ggplot(data=density.plot, aes(x=Score, y=Frequency)) +
 # score. One colour per airline. See if we can spot clusters in negative
 # or positive regions.
 
-# 2. Top 3 topics for each airline
+# 2. Dashboard by topic for each airline: what are customers of each airline talking about?
 
 topics.easyjet <- colMeans(allocation.dist[allocation.dist[,51]=="easyjet",-51])
 topics.ryanair <- colMeans(allocation.dist[allocation.dist[,51]=="ryanair",-51])
@@ -94,6 +94,7 @@ dash.ryanair$Topics <- as.character(dash.ryanair$Topics)
 dash.ryanair$Topics <- factor(dash.ryanair$Topics, levels = unique(dash.ryanair$Topics))
 
 plot.ryanair <- ggplot() + 
+  geom_bar(data=dash.ryanair[,], aes(x=Topics, y=Score), stat="Identity", col="grey", fill="grey", width = 0.7) +
   geom_bar(data=dash.ryanair[c(5,6,7),], aes(x=Topics, y=Score), stat="Identity", col="blue", fill="blue", width = 0.7) +
   geom_bar(data=dash.ryanair[1,], aes(x=Topics, y=Score), stat="Identity", col="red", fill="red", width = 0.7) +
   geom_bar(data=dash.ryanair[c(3,4),], aes(x=Topics, y=Score), stat="Identity", col="green", fill="green", width = 0.7) +
@@ -102,9 +103,58 @@ plot.ryanair <- ggplot() +
   geom_bar(data=dash.ryanair[2,], aes(x=Topics, y=Score), stat="Identity", col="cyan", fill="cyan", width = 0.7) +  
   scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
 
-# COMPLETE THE OTHER AIRLINES
-          
-# 3. Summary of position of each airline by topic (e.g. a mini chart for each
-# of the topics, what's the "share" of that topic for each airline, i.e. how
-# many tweets associated to that topic an airline has over its total number
-# of tweets?)
+# Vueling
+
+dash.vueling <- as.data.frame(cbind(topics.names,topics.vueling[c(17,42,31,49,11,45,46,14,27,37)]))
+colnames(dash.vueling) <- c("Topics","Score")
+dash.vueling$Topics <- as.character(dash.vueling$Topics)
+dash.vueling$Topics <- factor(dash.vueling$Topics, levels = unique(dash.vueling$Topics))
+
+plot.vueling <- ggplot() + 
+  geom_bar(data=dash.vueling[,], aes(x=Topics, y=Score), stat="Identity", col="grey", fill="grey", width = 0.7) +
+  geom_bar(data=dash.vueling[c(5,6,7),], aes(x=Topics, y=Score), stat="Identity", col="blue", fill="blue", width = 0.7) +
+  geom_bar(data=dash.vueling[1,], aes(x=Topics, y=Score), stat="Identity", col="red", fill="red", width = 0.7) +
+  geom_bar(data=dash.vueling[c(3,4),], aes(x=Topics, y=Score), stat="Identity", col="green", fill="green", width = 0.7) +
+  geom_bar(data=dash.vueling[c(8,9),], aes(x=Topics, y=Score), stat="Identity", col="purple", fill="purple", width = 0.7) +
+  geom_bar(data=dash.vueling[10,], aes(x=Topics, y=Score), stat="Identity", col="orange", fill="orange", width = 0.7) +  
+  geom_bar(data=dash.vueling[2,], aes(x=Topics, y=Score), stat="Identity", col="cyan", fill="cyan", width = 0.7) +  
+  scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
+
+# Norwegian
+
+dash.norwegian <- as.data.frame(cbind(topics.names,topics.norwegian[c(17,42,31,49,11,45,46,14,27,37)]))
+colnames(dash.norwegian) <- c("Topics","Score")
+dash.norwegian$Topics <- as.character(dash.norwegian$Topics)
+dash.norwegian$Topics <- factor(dash.norwegian$Topics, levels = unique(dash.norwegian$Topics))
+
+plot.norwegian <- ggplot() + 
+  geom_bar(data=dash.norwegian[,], aes(x=Topics, y=Score), stat="Identity", col="grey", fill="grey", width = 0.7) +
+  geom_bar(data=dash.norwegian[c(5,6,7),], aes(x=Topics, y=Score), stat="Identity", col="blue", fill="blue", width = 0.7) +
+  geom_bar(data=dash.norwegian[1,], aes(x=Topics, y=Score), stat="Identity", col="red", fill="red", width = 0.7) +
+  geom_bar(data=dash.norwegian[c(3,4),], aes(x=Topics, y=Score), stat="Identity", col="green", fill="green", width = 0.7) +
+  geom_bar(data=dash.norwegian[c(8,9),], aes(x=Topics, y=Score), stat="Identity", col="purple", fill="purple", width = 0.7) +
+  geom_bar(data=dash.norwegian[10,], aes(x=Topics, y=Score), stat="Identity", col="orange", fill="orange", width = 0.7) +  
+  geom_bar(data=dash.norwegian[2,], aes(x=Topics, y=Score), stat="Identity", col="cyan", fill="cyan", width = 0.7) +  
+  scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
+
+# BA
+
+dash.ba <- as.data.frame(cbind(topics.names,topics.ba[c(17,42,31,49,11,45,46,14,27,37)]))
+colnames(dash.ba) <- c("Topics","Score")
+dash.ba$Topics <- as.character(dash.ba$Topics)
+dash.ba$Topics <- factor(dash.ba$Topics, levels = unique(dash.ba$Topics))
+
+plot.ba <- ggplot() + 
+  geom_bar(data=dash.ba[,], aes(x=Topics, y=Score), stat="Identity", col="grey", fill="grey", width = 0.7) +
+  geom_bar(data=dash.ba[c(5,6,7),], aes(x=Topics, y=Score), stat="Identity", col="blue", fill="blue", width = 0.7) +
+  geom_bar(data=dash.ba[1,], aes(x=Topics, y=Score), stat="Identity", col="red", fill="red", width = 0.7) +
+  geom_bar(data=dash.ba[c(3,4),], aes(x=Topics, y=Score), stat="Identity", col="green", fill="green", width = 0.7) +
+  geom_bar(data=dash.ba[c(8,9),], aes(x=Topics, y=Score), stat="Identity", col="purple", fill="purple", width = 0.7) +
+  geom_bar(data=dash.ba[10,], aes(x=Topics, y=Score), stat="Identity", col="orange", fill="orange", width = 0.7) +  
+  geom_bar(data=dash.ba[2,], aes(x=Topics, y=Score), stat="Identity", col="cyan", fill="cyan", width = 0.7) +  
+  scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
+
+
+# 3. For each topic, the share of each airline. This is the same information
+# as above, but this time from the point of view of the topics. Can provide a
+# different & interesting visualisation. Use same colours as # 1
