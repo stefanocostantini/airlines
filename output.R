@@ -1,13 +1,14 @@
 library(ggplot2)
 library(dplyr)
 library(magrittr)
+library(reshape2)
 
 load("lda_model.RData")
 load("results.RData")
 
 # Text styling
 
-t <- list(family = "Futura, sans serif", size = 18, color = toRGB("grey50"))
+# t <- list(family = "Futura, sans serif", size = 18, color = toRGB("grey50"))
 
 # Then do figure one below to show the distribution of the scores - i.e. 
 # which are the most frequent scores? We can also highlight our preferred topics
@@ -55,13 +56,7 @@ dist <- ggplot(data=density.plot, aes(x=Score, y=Frequency)) +
   geom_hline(aes(yintercept=0), linetype = 2, colour = "#333333") +
   geom_vline(aes(xintercept=0), linetype = 2, colour = "#333333")
   
-# Do the following figures / illustrations
-
-# 1. Dot clouds of tweets for each airlines, varying x according to their 
-# score. One colour per airline. See if we can spot clusters in negative
-# or positive regions.
-
-# 2. Dashboard by topic for each airline: what are customers of each airline talking about?
+# 1. Dashboard by topic for each airline: what are customers of each airline talking about?
 
 topics.easyjet <- colMeans(allocation.dist[allocation.dist[,51]=="easyjet",-51])
 topics.ryanair <- colMeans(allocation.dist[allocation.dist[,51]=="ryanair",-51])
@@ -155,6 +150,36 @@ plot.ba <- ggplot() +
   scale_y_discrete(name="Topic popularity", breaks=seq(0,0.05))
 
 
-# 3. For each topic, the share of each airline. This is the same information
+# 2. For each topic, the share of each airline. This is the same information
 # as above, but this time from the point of view of the topics. Can provide a
-# different & interesting visualisation. Use same colours as # 1
+# different & interesting visualisation.
+
+# Now calculating split by topic (topic "ownership")
+
+topic17 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V17)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V17)))[,2] / table(allocation.dist$airline))
+topic42 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V42)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V42)))[,2] / table(allocation.dist$airline))
+topic31 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V31)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V31)))[,2] / table(allocation.dist$airline))
+topic49 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V49)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V49)))[,2] / table(allocation.dist$airline))
+topic11 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V11)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V11)))[,2] / table(allocation.dist$airline))
+topic45 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V45)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V45)))[,2] / table(allocation.dist$airline))
+topic46 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V46)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V46)))[,2] / table(allocation.dist$airline))
+topic14 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V14)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V14)))[,2] / table(allocation.dist$airline))
+topic27 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V27)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V27)))[,2] / table(allocation.dist$airline))
+topic37 <- (allocation.dist %>% group_by(airline) %>% summarise(score = sum(V37)))[,2] / table(allocation.dist$airline) / sum((allocation.dist %>% group_by(airline) %>% summarise(score = sum(V37)))[,2] / table(allocation.dist$airline))
+
+# assemble data frame
+ownership <- cbind(topic17,topic42,topic31,topic49,topic11,topic45,
+                   topic46,topic14,topic27,topic37)
+colnames(ownership) <- c("17","42","31","49","11","45","46",
+                         "14","27","37")
+
+Airlines <- c("Airline 1","Airline 2","Airline 3","Airline 4","Airline 5")
+
+ownership <- cbind(Airlines, ownership) %>% melt
+
+ggplot(ownership, aes(variable,value,fill=Airlines)) + 
+      geom_bar(stat="identity") + coord_flip() +
+      scale_x_discrete(name="Topic") +
+      scale_y_continuous(name="Topic ownership") +
+      scale_fill_brewer(palette = "GnBu")
+
