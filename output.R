@@ -180,6 +180,5 @@ ownership <- cbind(Airlines, ownership) %>% melt
 ggplot(ownership, aes(variable,value,fill=Airlines)) + 
       geom_bar(stat="identity") + coord_flip() +
       scale_x_discrete(name="Topic") +
-      scale_y_continuous(name="Topic ownership") +
-      scale_fill_brewer(palette = "GnBu")
+      scale_y_continuous(name="Topic ownership")
 
